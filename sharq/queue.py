@@ -5,6 +5,7 @@ import sys
 import signal
 import ConfigParser
 import redis
+import rediscluster
 from sharq.utils import (is_valid_identifier, is_valid_interval,
                          is_valid_requeue_limit, generate_epoch,
                          serialize_payload, deserialize_payload)
@@ -56,6 +57,12 @@ class SharQ(object):
                 db=db,
                 host=self._config.get('redis', 'host'),
                 port=self._config.get('redis', 'port')
+            )
+        elif redis_connection_type == "redis_cluster":
+            self._r = rediscluster.StrictRedisCluster(
+                host=self._config.get('redis', 'host'),
+                port=self._config.get('redis', 'port'),
+                skip_full_coverage_check=True
             )
 
         self._load_lua_scripts()
